@@ -29,7 +29,7 @@ def home(request):
             text = re.sub(r'\s+', ' ', text)
             text = re.sub(r'\s*-\s*', '-', text)
 
-            # Skill list
+            # Skill patterns
             skills_patterns = {
                 'python': r'\bpython\b',
                 'java': r'\bjava\b',
@@ -48,6 +48,7 @@ def home(request):
                 'docker': r'\bdocker\b'
             }
 
+            # Skill detection
             detected_skills = []
             text_lower = text.lower()
 
@@ -55,12 +56,18 @@ def home(request):
                 if re.search(pattern, text_lower):
                     detected_skills.append(skill)
 
+            # Match score
+            total_skills = len(skills_patterns)
+            matched_skills = len(detected_skills)
+            score = int((matched_skills / total_skills) * 100)
+
             preview_text = text[:1000]
 
             return render(request, 'home.html', {
                 'message': 'File uploaded successfully',
                 'text': preview_text,
-                'skills': detected_skills
+                'skills': detected_skills,
+                'score': score
             })
 
     return render(request, 'home.html')
