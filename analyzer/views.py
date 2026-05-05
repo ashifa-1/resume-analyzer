@@ -30,18 +30,28 @@ def home(request):
             text = re.sub(r'\s*-\s*', '-', text)
 
             # Skill list
-            skills_list = [
-                'python', 'java', 'c++', 'django', 'react', 'node.js',
-                'machine learning', 'deep learning', 'nlp',
-                'data structures', 'algorithms',
-                'sql', 'mongodb', 'fastapi', 'docker'
-            ]
+            skills_patterns = {
+                'python': r'\bpython\b',
+                'java': r'\bjava\b',
+                'c++': r'\bc\+\+\b',
+                'django': r'\bdjango\b',
+                'react': r'\breact\b',
+                'node.js': r'\b(node\.js|nodejs)\b',
+                'machine learning': r'\bmachine learning\b',
+                'deep learning': r'\bdeep learning\b',
+                'nlp': r'\b(nlp|natural language processing)\b',
+                'data structures': r'\bdata structures\b',
+                'algorithms': r'\balgorithms?\b',
+                'sql': r'\bsql\b',
+                'mongodb': r'\bmongodb\b',
+                'fastapi': r'\bfastapi\b',
+                'docker': r'\bdocker\b'
+            }
 
             detected_skills = []
             text_lower = text.lower()
 
-            for skill in skills_list:
-                pattern = r'\b' + re.escape(skill) + r'\b'
+            for skill, pattern in skills_patterns.items():
                 if re.search(pattern, text_lower):
                     detected_skills.append(skill)
 
