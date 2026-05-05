@@ -19,6 +19,14 @@
         <h3>Extracted Text:</h3>
         <p>{{ text }}</p>
     {% endif %}
+    {% if skills %}
+    <h3>Detected Skills:</h3>
+    <ul>
+        {% for skill in skills %}
+            <li>{{ skill }}</li>
+        {% endfor %}
+    </ul>
+        {% endif %}
 
 </body>
 </html>
