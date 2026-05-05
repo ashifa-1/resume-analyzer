@@ -37,12 +37,12 @@ def home(request):
                 'sql', 'mongodb', 'fastapi', 'docker'
             ]
 
-            # Skill detection
             detected_skills = []
             text_lower = text.lower()
 
             for skill in skills_list:
-                if skill in text_lower:
+                pattern = r'\b' + re.escape(skill) + r'\b'
+                if re.search(pattern, text_lower):
                     detected_skills.append(skill)
 
             preview_text = text[:1000]
