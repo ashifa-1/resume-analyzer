@@ -7,7 +7,8 @@ import re
 def home(request):
     if request.method == 'POST':
         uploaded_file = request.FILES.get('resume')
-        
+        job_desc = request.POST.get('job_desc')
+
         if uploaded_file:
             file_path = os.path.join(settings.MEDIA_ROOT, uploaded_file.name)
 
@@ -24,50 +25,41 @@ def home(request):
                     if extracted:
                         text += extracted
 
-            # Clean text
+            # Clean resume text
             text = text.replace('\n', ' ')
             text = re.sub(r'\s+', ' ', text)
             text = re.sub(r'\s*-\s*', '-', text)
 
-            # Skill patterns
-            skills_patterns = {
-                'python': r'\bpython\b',
-                'java': r'\bjava\b',
-                'c++': r'\bc\+\+\b',
-                'django': r'\bdjango\b',
-                'react': r'\breact\b',
-                'node.js': r'\b(node\.js|nodejs)\b',
-                'machine learning': r'\bmachine learning\b',
-                'deep learning': r'\bdeep learning\b',
-                'nlp': r'\b(nlp|natural language processing)\b',
-                'data structures': r'\bdata structures\b',
-                'algorithms': r'\balgorithms?\b',
-                'sql': r'\bsql\b',
-                'mongodb': r'\bmongodb\b',
-                'fastapi': r'\bfastapi\b',
-                'docker': r'\bdocker\b'
-            }
-
-            # Skill detection
-            detected_skills = []
-            text_lower = text.lower()
-
-            for skill, pattern in skills_patterns.items():
-                if re.search(pattern, text_lower):
-                    detected_skills.append(skill)
-
-            # Match score
-            total_skills = len(skills_patterns)
-            matched_skills = len(detected_skills)
-            score = int((matched_skills / total_skills) * 100)
-
             preview_text = text[:1000]
+
+            matched_keywords = []
+            score = 0
+
+            if job_desc:
+                jd_text = job_desc.lower()
+                jd_text = re.sub(r'\s+', ' ', jd_text)
+
+                # remove common words
+                stopwords = {'and', 'the', 'with', 'for', 'in', 'of', 'to', 'a', 'on', 'is', 'are'}
+
+                jd_keywords = [word for word in jd_text.split() if word not in stopwords and len(word) > 2]
+
+                jd_keywords = list(set(jd_keywords))  # remove duplicates
+
+                resume_text = text.lower()
+
+                for word in jd_keywords:
+                    if word in resume_text:
+                        matched_keywords.append(word)
+
+                if len(jd_keywords) > 0:
+                    score = int((len(matched_keywords) / len(jd_keywords)) * 100)
 
             return render(request, 'home.html', {
                 'message': 'File uploaded successfully',
                 'text': preview_text,
-                'skills': detected_skills,
-                'score': score
+                'score': score,
+                'matched_keywords': matched_keywords[:20]
             })
 
     return render(request, 'home.html')

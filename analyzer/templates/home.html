@@ -8,6 +8,9 @@
 
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
+
+        <textarea name="job_desc" placeholder="Paste Job Description here..." rows="6" cols="60"></textarea><br><br>
+
         <input type="file" name="resume">
         <button type="submit">Upload</button>
     </form>
@@ -15,21 +18,24 @@
     {% if message %}
         <p>{{ message }}</p>
     {% endif %}
+
+    {% if score %}
+        <h2>Match Score: {{ score }}%</h2>
+    {% endif %}
+
+    {% if matched_keywords %}
+        <h3>Matched Keywords:</h3>
+        <ul>
+            {% for word in matched_keywords %}
+                <li>{{ word }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     {% if text %}
         <h3>Extracted Text:</h3>
         <p>{{ text }}</p>
     {% endif %}
-    {% if skills %}
-    <h3>Detected Skills:</h3>
-    <ul>
-        {% for skill in skills %}
-            <li>{{ skill }}</li>
-        {% endfor %}
-    </ul>
-        {% endif %}
 
-    {% if score %}
-    <h2>Match Score: {{ score }}%</h2>
-    {% endif %}
 </body>
 </html>
